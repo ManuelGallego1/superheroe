@@ -1,98 +1,213 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  ScrollView, View, Text, StyleSheet,
+  Dimensions, TouchableOpacity,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+import { COLORS } from '../../src/constants/colors';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width } = Dimensions.get('window');
+
+const FEATURES = [
+  {
+    icon: 'auto-awesome' as const,
+    title: '20 Superhéroes',
+    description: 'Explora una selección de los personajes más icónicos del universo Marvel y DC.',
+    color: '#e94560',
+  },
+  {
+    icon: 'person-search' as const,
+    title: 'Biografía Detallada',
+    description: 'Conoce el nombre real, origen, editorial y primera aparición de cada héroe.',
+    color: '#4ade80',
+  },
+  {
+    icon: 'bolt' as const,
+    title: 'Power Stats',
+    description: 'Visualiza inteligencia, fuerza, velocidad, durabilidad, poder y combate.',
+    color: '#facc15',
+  },
+];
+
+const HOW_IT_WORKS = [
+  'La app carga 20 héroes usando IDs estáticos en paralelo con Promise.all.',
+  'Cada tarjeta muestra nombre, editorial y alineación del personaje.',
+  'Al tocar un héroe, se consulta la API para traer su detalle completo.',
+  'El detalle incluye biografía, imagen y estadísticas de poder con barras.',
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+
+        {/* Banner principal */}
+        <View style={styles.banner}>
+          <View style={styles.bannerIcon}>
+            <MaterialIcons name="shield" size={56} color={COLORS.accent} />
+          </View>
+          <Text style={styles.bannerTitle}>SuperHero{'\n'}Explorer</Text>
+          <Text style={styles.bannerSubtitle}>
+            Descubre el universo de los superhéroes. Consulta poderes, biografías e historias
+            directamente desde la SuperHero API.
+          </Text>
+          <TouchableOpacity
+            style={styles.ctaButton}
+            onPress={() => router.push('/(tabs)/heroes')}
+            activeOpacity={0.85}
+          >
+            <MaterialIcons name="auto-awesome" size={18} color="#fff" />
+            <Text style={styles.ctaText}>Ver Superhéroes</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Estadísticas rápidas */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>En esta app</Text>
+          <View style={styles.statsRow}>
+            {[
+              { number: '20', label: 'Héroes' },
+              { number: '6', label: 'Power Stats' },
+              { number: '2', label: 'Universos' },
+            ].map((s) => (
+              <View key={s.label} style={styles.statBox}>
+                <Text style={styles.statNumber}>{s.number}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Características */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>¿Qué puedes hacer?</Text>
+          {FEATURES.map((f) => (
+            <View key={f.title} style={styles.featureCard}>
+              <View style={[styles.featureIcon, { backgroundColor: f.color + '22' }]}>
+                <MaterialIcons name={f.icon} size={28} color={f.color} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureTitle}>{f.title}</Text>
+                <Text style={styles.featureDesc}>{f.description}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Cómo funciona */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>¿Cómo funciona?</Text>
+          {HOW_IT_WORKS.map((text, i) => (
+            <View key={i} style={styles.stepRow}>
+              <View style={styles.stepBadge}>
+                <Text style={styles.stepNumber}>{i + 1}</Text>
+              </View>
+              <Text style={styles.stepText}>{text}</Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={{ height: 24 }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  safe: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: COLORS.background },
+  banner: {
+    alignItems: 'center',
+    padding: 32,
+    paddingTop: 48,
+    backgroundColor: COLORS.surface,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    marginBottom: 24,
+  },
+  bannerIcon: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: COLORS.accent + '22',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  bannerTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    textAlign: 'center',
+    lineHeight: 44,
+    marginBottom: 12,
+  },
+  bannerSubtitle: {
+    fontSize: 14,
+    color: COLORS.textSub,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+    paddingHorizontal: 8,
+  },
+  ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    backgroundColor: COLORS.accent,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 28,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  ctaText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  section: { paddingHorizontal: 16, marginBottom: 24 },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.text, marginBottom: 16 },
+  statsRow: { flexDirection: 'row', gap: 10 },
+  statBox: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 16,
+    alignItems: 'center',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  statNumber: { fontSize: 32, fontWeight: 'bold', color: COLORS.accent },
+  statLabel: { fontSize: 12, color: COLORS.textSub, marginTop: 4 },
+  featureCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
+    gap: 14,
   },
+  featureIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  featureText: { flex: 1 },
+  featureTitle: { fontSize: 15, fontWeight: 'bold', color: COLORS.text, marginBottom: 4 },
+  featureDesc: { fontSize: 13, color: COLORS.textSub, lineHeight: 20 },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 14,
+  },
+  stepBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepNumber: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  stepText: { flex: 1, color: COLORS.textSub, fontSize: 14, lineHeight: 22, paddingTop: 4 },
 });
