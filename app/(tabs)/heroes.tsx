@@ -82,7 +82,7 @@ export default function HeroesScreen() {
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialIcons name="warning" size={48} color={COLORS.neutral} />
+            <MaterialIcons name="search" size={48} color={COLORS.neutral} />
             <Text style={styles.emptyText}>No se encontraron héroes.</Text>
           </View>
         }
